@@ -33,6 +33,7 @@ defmodule VowpalClientTest do
         raise e
     end
 
+    System.cmd("killall", ["-9", "vw"])
     Process.delete(pid)
   end
 end
