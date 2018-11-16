@@ -10,7 +10,7 @@ defmodule VowpalClientTest do
     pid =
       spawn(fn ->
         System.cmd(
-          "/usr/local/bin/vw",
+          System.find_executable("vw"),
           ["--port", "12312", "--foreground", "--num_children", "1"],
           into: IO.stream(:stdio, :line)
         )
