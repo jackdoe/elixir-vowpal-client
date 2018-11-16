@@ -1,20 +1,12 @@
 defmodule VowpalClientTest do
   use ExUnit.Case
-  doctest VowpalClient
 
   test "greets the world" do
     model_name = "/tmp/test_model_vowpal_client"
     File.rm("#{model_name}")
     System.cmd("killall", ["-9", "vw"])
 
-    pid =
-      spawn(fn ->
-        System.cmd(
-          System.find_executable("vw"),
-          ["--port", "12312", "--foreground", "--num_children", "1"],
-          into: IO.stream(:stdio, :line)
-        )
-      end)
+    pid = VowpalClient.spawn_vowpal(12312)
 
     :timer.sleep(:timer.seconds(1))
 
