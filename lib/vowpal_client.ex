@@ -1,14 +1,6 @@
 defmodule VowpalClient do
   def start_link(name, address, port, timeout) do
-    {:ok, socket} =
-      :gen_tcp.connect(
-        address,
-        port,
-        [:binary, packet: :line, active: false, reuseaddr: true],
-        timeout
-      )
-
-    GenServer.start_link(__MODULE__, socket, name: name)
+    GenServer.start_link(__MODULE__, {address, port, timeout}, name: name)
   end
 
   @spec send(GenServer.server(), String.t()) :: String.t()
@@ -21,7 +13,15 @@ defmodule VowpalClient do
     GenServer.call(server_name, {:save, {cwd, model_name}})
   end
 
-  def init(socket) do
+  def init({address, port, timeout}) do
+    {:ok, socket} =
+      :gen_tcp.connect(
+        address,
+        port,
+        [:binary, packet: :line, active: false, reuseaddr: true],
+        timeout
+      )
+
     {:ok, socket}
   end
 
