@@ -3,6 +3,49 @@ defmodule VowpalClient do
     GenServer.start_link(__MODULE__, {address, port, timeout}, name: name)
   end
 
+  @type feature() :: {integer(), float()} | {String.t(), float()} | String.t() | integer()
+  @type namespace() :: {Strinb.t(), list(feature())}
+
+  def toLine(namespaces) do
+    line =
+      namespaces
+      |> Enum.map(fn {name, features} ->
+        f =
+          features
+          |> Enum.map(fn e ->
+            case e do
+              {name, value} ->
+                "#{name}:#{value}"
+
+              name ->
+                "#{name}:1"
+            end
+          end)
+          |> Enum.join(" ")
+
+        "|{name} #{f}"
+      end)
+      |> Enum.join(" ")
+
+    line
+  end
+
+  @spec train(GenServer.server(), integer(), list(namespace())) :: float()
+  def train(server_name, label, namespaces) do
+    line = toLine(namespaces)
+    v = GenServer.call(server_name, {:send, "#{label} #{line}\n"})
+    {f, _} = Float.parse(v)
+    f
+  end
+
+  @spec predict(GenServer.server(), list(namespace())) :: float()
+  def predict(server_name, namespaces) do
+    line = toLine(namespaces)
+    v = GenServer.call(server_name, {:send, "#{line}\n"})
+    {f, _} = Float.parse(v)
+    f
+  end
+
   @spec send(GenServer.server(), String.t()) :: String.t()
   def send(server_name, line) do
     GenServer.call(server_name, {:send, line})
