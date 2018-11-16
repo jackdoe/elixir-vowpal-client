@@ -51,9 +51,9 @@ defmodule VowpalClient do
     GenServer.call(server_name, {:send, line})
   end
 
-  @spec save(GenServer.server(), {String.t(), String.t()}) :: binary()
-  def save(server_name, {cwd, model_name}) do
-    GenServer.call(server_name, {:save, {cwd, model_name}})
+  @spec save(GenServer.server(), String.t()) :: binary()
+  def save(server_name, path) do
+    GenServer.call(server_name, {:save, path})
   end
 
   def init({address, port, timeout}) do
@@ -88,13 +88,12 @@ defmodule VowpalClient do
     end
   end
 
-  def handle_call({:save, {cwd, model_name}}, from, socket) do
+  def handle_call({:save, path}, from, socket) do
     # let it die
-    :ok = :gen_tcp.send(socket, "save_#{model_name}\n")
+    :ok = :gen_tcp.send(socket, "save_#{path}\n")
 
     # vw will save the model async
     Task.start_link(fn ->
-      path = "#{cwd}/#{model_name}"
       waitToExist(path, 1000)
       GenServer.reply(from, File.read!(path))
     end)
