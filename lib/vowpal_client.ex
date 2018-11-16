@@ -1,8 +1,15 @@
 defmodule VowpalClient do
   @moduledoc """
-  Provides a TCP client for Vowpal Wabbit, and exports functions `train/3`, `predict/2`, and `save/2`
+  Provides a TCP client for [Vowpal Wabbit](https://github.com/VowpalWabbit/vowpal_wabbit), and exports functions `VowpalClient.train/3`, `VowpalClient.predict/2`, and `VowpalClient.save/2`
 
-  `spawn_vowpal/2` is just for debugging purposes, ideally you will have vowpal running somewhere else ('vw --foreground --port 12312 --num_children 1 ...')
+  `VowpalClient.spawn_vowpal/2` is just for debugging purposes, ideally you will have vowpal running somewhere else (`vw --foreground --port 12312 --num_children 1 ...`)
+
+  Vowpal Wabbit is amazing and fast linear model tool, (and by fast I mean *fast*)
+  make sure you check out: [Vowpal Examples](https://github.com/VowpalWabbit/vowpal_wabbit/wiki/Examples)
+
+  This is *incomplete* client, that at the moment works with my very-basic use case, but as I am using it, it will get more complete.
+
+  [issues](https://github.com/jackdoe/elixir-vowpal-client/issues) [fork](https://github.com/jackdoe/elixir-vowpal-client) [license - MIT](https://en.wikipedia.org/wiki/MIT_License)
 
   ## Examples
 
@@ -24,6 +31,19 @@ defmodule VowpalClient do
   """
 
   use GenServer
+
+  @doc """
+  spawns vw with `System.cmd/3`, used mainly for debugging and testing, you should start vw stand alone
+
+  ## Parameters
+    - port: port to listen to (--port xyz)
+    - arguments: additional arguments passed to `System.cmd/3`
+
+  ## Examples
+      iex> VowpalClient.spawn_vowpal(12123)
+      #PID<0.140.0>
+
+  """
 
   @spec spawn_vowpal(integer(), list(String.t())) :: pid()
   def spawn_vowpal(port, arguments \\ []) do
@@ -144,6 +164,21 @@ defmodule VowpalClient do
     f
   end
 
+  @doc """
+  Sends a line to Vowpal Wabbit, and waits for vw to reply back
+
+  ## Parameters
+    - server_name: genserver server name (same you gave to `start_link/3`)
+    - line: string ending with \\n
+
+  ## Examples
+
+      iex> VowpalClient.send(VowpalClientTest, "|a 12 3\\n")
+      "0\\n"
+
+  this sends to vw: "|a 12 3\\n"
+  """
+
   @spec send(GenServer.server(), String.t()) :: String.t()
   def send(server_name, line) do
     GenServer.call(server_name, {:send, line})
@@ -163,10 +198,10 @@ defmodule VowpalClient do
 
   ## Examples
 
-     iex> VowpalClient.save(:vw, "/tmp/abc.txt")
-     6, 0, 0, 0, 56, 46, 54, 46, 49, 0, 1, 0, 0, 0, 0, 109, 0, 0, 128, 191, 0, 0,
-     0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 32, 45,
-     45, 104, 97, 115, ...
+      iex> VowpalClient.save(:vw, "/tmp/abc.txt")
+      <<6, 0, 0, 0, 56, 46, 54, 46, 49, 0, 1, 0, 0, 0, 0, 109, 0, 0, 128, 191, 0, 0,
+      0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 32, 45,
+      45, 104, 97, 115, ...
 
   this sends to vw: "save_/tmp/abc.txt\\n"
   """

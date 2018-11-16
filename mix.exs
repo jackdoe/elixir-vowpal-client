@@ -7,22 +7,33 @@ defmodule VowpalClient.MixProject do
       version: "0.1.0",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      description: description(),
+      package: package(),
+      source_url: "https://github.com/jackdoe/elixir-vowpal-client",
+      name: "vowpal_client"
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
-  def application do
-    [
-      extra_applications: [:logger]
-    ]
+  def application() do
+    []
   end
 
-  # Run "mix help deps" to learn about dependencies.
-  defp deps do
+  defp deps() do
+    [{:earmark, "~> 1.2", only: :dev}, {:ex_doc, "~> 0.19", only: :dev}]
+  end
+
+  defp description() do
+    "Vowpal Wabbit (awesome machine learning tool - https://github.com/JohnLangford/vowpal_wabbit/) TCP client to query for training and predicting"
+  end
+
+  defp package() do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
+      name: "vowpal_client",
+      files: ~w(lib priv .formatter.exs mix.exs README* readme* LICENSE*
+                license* CHANGELOG* changelog* src),
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/jackdoe/elixir-vowpal-client"}
     ]
   end
 end
