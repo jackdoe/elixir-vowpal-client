@@ -1,4 +1,6 @@
 defmodule VowpalClient do
+  use GenServer
+
   def start_link(name, address, port, timeout) do
     GenServer.start_link(__MODULE__, {address, port, timeout}, name: name)
   end
@@ -56,6 +58,7 @@ defmodule VowpalClient do
     GenServer.call(server_name, {:save, path})
   end
 
+  @impl true
   def init({address, port, timeout}) do
     {:ok, socket} =
       :gen_tcp.connect(
@@ -68,6 +71,7 @@ defmodule VowpalClient do
     {:ok, socket}
   end
 
+  @impl true
   def handle_call({:send, line}, _from, socket) do
     if !String.ends_with?(line, "\n") do
       raise ArgumentError, message: "line must end with \\n"
@@ -88,6 +92,7 @@ defmodule VowpalClient do
     end
   end
 
+  @impl true
   def handle_call({:save, path}, from, socket) do
     # let it die
     :ok = :gen_tcp.send(socket, "save_#{path}\n")
