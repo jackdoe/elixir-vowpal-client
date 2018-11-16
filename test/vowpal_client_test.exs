@@ -25,11 +25,11 @@ defmodule VowpalClientTest do
       assert "0\n" == VowpalClient.send(VowpalClientTest, "|a 12 3\n")
       assert "0\n" == VowpalClient.send(VowpalClientTest, "1 |a 12 3\n")
       assert "0.579291\n" == VowpalClient.send(VowpalClientTest, "|a 12 3\n")
-      assert 0.193097 == VowpalClient.predict(VowpalClientTest, [{"a", [{"12", 1}, {"3", 1}]}])
-      assert 0.193097 == VowpalClient.train(VowpalClientTest, -1, [{"a", [{"12", 1}, {"3", 1}]}])
-      assert -0.389133 == VowpalClient.predict(VowpalClientTest, [{"a", [{"12", 1}, {"3", 1}]}])
-      assert -0.389133 == VowpalClient.predict(VowpalClientTest, [{"a", [{"12", 1}, "3"]}])
-      assert -0.389133 == VowpalClient.predict(VowpalClientTest, [{"a", [12, 3]}])
+      assert 0.579291 == VowpalClient.predict(VowpalClientTest, [{"a", [{"12", 1}, {"3", 1}]}])
+      assert 0.579291 == VowpalClient.train(VowpalClientTest, -1, [{"a", [{"12", 1}, {"3", 1}]}])
+      assert -0.006252 == VowpalClient.predict(VowpalClientTest, [{"a", [{"12", 1}, {"3", 1}]}])
+      assert -0.006252 == VowpalClient.predict(VowpalClientTest, [{"a", [{"12", 1}, "3"]}])
+      assert -0.006252 == VowpalClient.predict(VowpalClientTest, [{"a", [12, 3]}])
     rescue
       e ->
         System.cmd("killall", ["-9", "vw"])

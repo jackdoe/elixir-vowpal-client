@@ -6,7 +6,7 @@ defmodule VowpalClient do
   @type feature() :: {integer(), float()} | {String.t(), float()} | String.t() | integer()
   @type namespace() :: {Strinb.t(), list(feature())}
 
-  def toLine(namespaces) do
+  defp toLine(namespaces) do
     line =
       namespaces
       |> Enum.map(fn {name, features} ->
@@ -23,7 +23,7 @@ defmodule VowpalClient do
           end)
           |> Enum.join(" ")
 
-        "|{name} #{f}"
+        "|#{name} #{f}"
       end)
       |> Enum.join(" ")
 
